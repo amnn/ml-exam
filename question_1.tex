@@ -75,7 +75,7 @@ After rearranging, we notice that for a given $i=1,\ldots,m^+$, at the optimal s
 Given this equality between slack variables, we may replace the 200 slack variables per positive example with one, without any loss of freedom at the optimum:
 
 \begin{alignat*}{3}
-  \min_{\mathbf{w},~w_0,~\boldsymbol\xi}\quad&&\frac{1}{2}\norm{\mathbf{w}}^2 + C(\sum_{i=1}^{m^-}\xi_i^-+200\sum_{i=1}^{m^+}\xi_i^+)\\
+  \min_{\mathbf{w},~w_0,~\boldsymbol\xi^+,\boldsymbol\xi^-}\quad&&\frac{1}{2}\norm{\mathbf{w}}^2 + C(\sum_{i=1}^{m^-}\xi_i^-+200\sum_{i=1}^{m^+}\xi_i^+)\\
   \text{s.t. }\quad&&-1(\mathbf{w}\cdot\mathbf{x}_i^-+w_0) & \geq 1 - \xi_i^- &&\quad\text{for }i = 1,\ldots,m^-
   \\ &&+1(\mathbf{w}\cdot\mathbf{x}_i^++w_0) & \geq 1 - \xi_i^+ &&\quad\text{for }i = 1,\ldots,m^+
   \\ &&\xi_i^- & \geq 0 &&\quad\text{for }i=1,\ldots,m^-
@@ -85,7 +85,7 @@ Given this equality between slack variables, we may replace the 200 slack variab
 At this point it is worth observing that this has the effect of penalising false-\textit{negative} errors, not false-positive errors as we had intended. We can change this by moving the factor of 200 to the slack variables for the non-spam emails. In our original formulation, this would be equivalent to duplicating all the legitimate emails 200 times:
 
 \begin{alignat*}{3}
-  \min_{\mathbf{w},~w_0,~\boldsymbol\xi}\quad&&\frac{1}{2}\norm{\mathbf{w}}^2 + C(200\sum_{i=1}^{m^-}\xi_i^-+\sum_{i=1}^{m^+}\xi_i^+)\\
+  \min_{\mathbf{w},~w_0,~\boldsymbol\xi^+,\boldsymbol\xi^-}\quad&&\frac{1}{2}\norm{\mathbf{w}}^2 + C(200\sum_{i=1}^{m^-}\xi_i^-+\sum_{i=1}^{m^+}\xi_i^+)\\
   \text{s.t. }\quad&&-1(\mathbf{w}\cdot\mathbf{x}_i^-+w_0) & \geq 1 - \xi_i^- &&\quad\text{for }i = 1,\ldots,m^-
   \\ &&+1(\mathbf{w}\cdot\mathbf{x}_i^++w_0) & \geq 1 - \xi_i^+ &&\quad\text{for }i = 1,\ldots,m^+
   \\ &&\xi_i^- & \geq 0 &&\quad\text{for }i=1,\ldots,m^-
@@ -93,7 +93,7 @@ At this point it is worth observing that this has the effect of penalising false
 \end{alignat*}
 \noindent And then the dual takes the form of:
 \begin{align*}
-  \max_{\boldsymbol\alpha}\quad&-\frac{1}{2}\sum_{i,j}^{m}\alpha_i\alpha_jy_iy_j\mathbf{x}_i^T\mathbf{x}_j+\sum_{i}^m\alpha_i \\
+  \max_{\boldsymbol\alpha}\quad&\sum_{i}^m\alpha_i-\frac{1}{2}\sum_{i,j}^{m}\alpha_i\alpha_jy_iy_j\mathbf{x}_i\cdot\mathbf{x}_j\\
   \text{s.t.}\quad&\sum_i^my_i\alpha_i = 0
   \\ & 0\leq\alpha_i\leq C && \text{for }i=1,\ldots,m\text{ where }y_i=+1
   \\ & 0\leq\alpha_i\leq 200C &&\text{for }i=1,\ldots,m\text{ where }y_i=-1
@@ -104,3 +104,36 @@ The original formulation would have been less efficient (in time \textit{and} sp
 The equivalent formulation which changes the cost of slack, however, has the same number of variables in the dual form as the standard soft margin classifier, so it allows us to use the idea of duplication with no performance penalty.
 
 \subsection{Part (c)}
+We use a similar idea to that of Part (b), but instead of simplying paying \textit{more} for false-positive slack, we make it infinitely expensive to have false-positive slack. This can be interpreted as having the margin facing legitimate emails being \textbf{hard} and the margin facing spam emails \textbf{soft}.\\[1em]
+
+\noindent\textbf{Primal}
+\begin{alignat*}{3}
+  \min_{\mathbf{w},~w_0,~\boldsymbol\xi^+}\quad&&\frac{1}{2}\norm{\mathbf{w}}^2 + C\sum_{i=1}^{m^+}\xi_i^+\\
+  \text{s.t. }\quad&&-1(\mathbf{w}\cdot\mathbf{x}_i^-+w_0) & \geq 1 &&\quad\text{for }i = 1,\ldots,m^-
+  \\ &&+1(\mathbf{w}\cdot\mathbf{x}_i^++w_0) & \geq 1 - \xi_i^+ &&\quad\text{for }i = 1,\ldots,m^+
+  \\ &&\xi_i^+ & \geq 0 &&\quad\text{for }i=1,\ldots,m^+
+\end{alignat*}
+
+\noindent\textbf{Dual}
+\begin{align*}
+  \max_{\boldsymbol\alpha}\quad&\sum_{i}^m\alpha_i-\frac{1}{2}\sum_{i,j}^{m}\alpha_i\alpha_jy_iy_j\mathbf{x}_i\cdot\mathbf{x}_j\\
+  \text{s.t.}\quad&\sum_i^my_i\alpha_i = 0
+  \\ & 0\leq\alpha_i\leq C && \text{for }i=1,\ldots,m\text{ where }y_i=+1
+  \\ & 0\leq\alpha_i &&\text{for }i=1,\ldots,m\text{ where }y_i=-1
+\end{align*}
+
+\begin{prop}
+  The optimal classifier $\mathbf{w},~w_0$ correctly classifies all legitimate emails in the training set.
+\end{prop}
+\begin{proof}
+  Observe that as $\mathbf{w},~w_0$ is an optimal classifier, it is feasible in the primal, as a result, for all negative samples $\mathbf{x}_i^-$ (corresponding to non-spam/legitimate emails) we have that:
+
+  \begin{flalign*}
+    &-1(\mathbf{w}\cdot\mathbf{x}_i^-+w_0)\geq 1 &&
+    \\\iffs\quad& \mathbf{w}\cdot\mathbf{x}_i^-+w_0\leq -1 &&
+    \\\imps\quad& \text{The classifier classes  $\mathbf{x}_i^-$ as $-1$ (not spam)} &&
+    \tag*{\qedhere}
+  \end{flalign*}
+\end{proof}
+
+In order to minimise false-negative errors, we should perform a cross-validated grid-search to choose an appropriate value of $C$ that minimises validation error.

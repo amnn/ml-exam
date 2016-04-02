@@ -1,0 +1,110 @@
+\documentclass{tufte-handout}
+
+\title{Machine Learning 2016}
+\author{Candidate No. 683444}
+
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{bm}
+\usepackage{bussproofs}
+\usepackage{calc}
+\usepackage{enumerate}
+\usepackage{mathtools}
+\usepackage{relsize}
+\usepackage{stmaryrd}
+\usepackage{tikz}
+\usepackage{wasysym}
+
+\usetikzlibrary{cd}
+
+%%% Title Formatting
+
+\titleformat*{\section}{\normalfont\Large\scshape}
+\titleformat*{\subsection}{\normalfont\large\scshape}
+\newcommand{\sectionbreak}{\clearpage}
+
+%%% Custom Commands
+
+\newcommand{\Lemma}{\textbf{lemma}}
+\newcommand{\Thm}{\textbf{thm}}
+\newcommand{\Def}{\textbf{def}}
+\newcommand{\Contra}{\textbf{contra}}
+\newcommand{\Assoc}{\textbf{assoc}}
+\newcommand{\Trans}{\textbf{trans}}
+\newcommand{\Refl}{\textbf{refl}}
+\newcommand{\Hyp}{\textbf{hyp}}
+\newcommand{\Ass}{\textbf{assume}}
+\newcommand{\Intro}{\textbf{intro}}
+\newcommand{\Elim}{\textbf{elim}}
+\newcommand{\Let}{\textbf{let}}
+\newcommand{\Epic}{\textbf{epic}}
+\newcommand{\Monic}{\textbf{monic}}
+\newcommand{\compose}{\circ}
+\newcommand{\epic}{\twoheadrightarrow}
+\newcommand{\cat}[1]{\mathcal{#1}}
+\newcommand{\opcat}[1]{\mathcal{#1}^{\text{op}}}
+\renewcommand{\hom}[3]{\cat{#1}(#2, #3)}
+\newcommand{\Exp}{\Rightarrow}
+\newcommand{\sembrack}[1]{\llbracket #1 \rrbracket}
+
+\newcommand{\step}[1][\phantom{=}]{\item[{\makebox[{\widthof{$\Leftrightarrow$}}][l]{$#1$}}]}
+\newcommand{\subp}[1]{\item[$#1$]}
+\newcommand{\iffs}{\Leftrightarrow}
+\newcommand{\imps}{\Rightarrow}
+\newcommand{\contras}{\divideontimes}
+
+\def\mathnote#1{%
+  \tag*{\rlap{\hspace\marginparsep\smash{\parbox[t]{\marginparwidth}{%
+  \footnotesize#1}}}}
+}
+
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\FV}{FV}
+\DeclareMathOperator{\App}{App}
+\DeclareMathOperator{\Widen}{\nabla}
+\DeclareMathOperator{\Narrow}{\triangle}
+\DeclareMathOperator{\Infty}{\mathit{infty}}
+
+%%% Theorem styles
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\numberwithin{definition}{section}
+
+\theoremstyle{plain}
+\newtheorem{prop}{Proposition}
+\numberwithin{prop}{section}
+
+\theoremstyle{plain}
+\newtheorem{lemma}{Lemma}
+\numberwithin{lemma}{section}
+
+\theoremstyle{plain}
+\newtheorem{corollary}{Corollary}
+\numberwithin{corollary}{section}
+
+%%% Initialise Counters
+
+\setcounter{section}{1}
+\maxdeadcycles=1000
+
+%%% Proof Trees
+\EnableBpAbbreviations
+
+%%% Content
+\begin{document}
+\maketitle
+
+\section{Question 1}\label{sec:q-1}
+\input{question_1.tex}
+
+\section{Question 2}\label{sec:q-2}
+\input{question_2.tex}
+
+\section{Question 3}\label{sec:q-3}
+\input{question_3.tex}
+
+\end{document}

@@ -2,6 +2,30 @@
 
 Suppose we follow our colleague's advice: After training the classifier using a soft-margin SVM on $\langle(\mathbf{x}_i,y_i)\rangle_{i=1}^m$ to get parameters $\mathbf{w}, w_0$, we try to find the $\alpha$ that minimises false-positive error on a fresh sample $\langle(\mathbf{v}_i,u_i)\rangle_{i=1}^k$.
 
+Our colleague refers to this as cross-validation. For this to be true, we would need to treat $\alpha$ as a hyper-parameter, and for each value of $\alpha$, train a new classifier, checking its false-positive rate on the validation set, picking the $\alpha$ that yields the lowest such rate. This seems at odds with their claim that we do not need to retrain the classifier, but in fact it is not: The value of $\alpha$ does not affect the classifier that is learned (as it does not appear in the SVM objective or constraints), so we may train it once and then proceed to vary $\alpha$.
+
+Given the optimal $\mathbf{w}^\ast$ and $w_0^\ast$ from training, our goal can be phrased in terms of finding the $\alpha^\ast$ that optimises program $V_1$ defined below (whose objective is exactly the number of false positive examples in the validation set).
+\begin{align*}
+  V_1: && \min_{\alpha} & \sum_{\substack{i=1\\u_i=-1}}^k\sembrack{\mathbf{v}_i\cdot\mathbf{w}^\ast+w_0^\ast\geq\alpha} &&
+  \\   && \text{s.t. } & \alpha > 0 &&
+\end{align*}
+However, it is always possible to achieve an optimal value of $0$ for $V_1$ by setting:
+\begin{align*}
+  \alpha > \max(\{0\}\cup\{\mathbf{v}_i\cdot\mathbf{w}+w_0:1\leq i\leq k,~u_i=-1\})
+\end{align*}
+The consequence of this is that when optimising $V_1$, $\alpha$ will be sent to $\infty$, and our classification for a new email with features $\mathbf{x}$ becomes:
+\begin{align*}
+  \widehat{y} & =
+  \begin{cases}
+    1 & \text{if }\mathbf{x}\cdot\mathbf{w} + w_0\geq\infty\\
+    -1 & \text{otherwise}
+  \end{cases}
+  \\ & = -1
+\end{align*}
+i.e. all emails are labelled as not spam!
+
+In summary this method is poor because it does not take false-negative error into account at all.
+
 \subsection{Part (b)}
 
 \subsection{Part (c)}

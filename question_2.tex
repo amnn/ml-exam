@@ -1,5 +1,24 @@
 \subsection{Part (a)}
 
+Our model treats the each distinct input as an independent Bernoulli random variable, whose probability of success is governed by the input triple that was posed as the question, so we have as many free parameters as the size of our input space. To determine this size we note that, given an input triple $(a : b, c)$:
+\begin{itemize}[-]
+\itemsep0em
+\item All fruit are distinct, that is to say $a\neq b$, $b\neq c$ and $a\neq c$.
+\item The choices are ordered: $b\prec c$.
+\end{itemize}
+
+There are $n(n-1)(n-2)$ triples of distinct fruit, however, in half of them, the order of the second and third fruit is inverted, so in actuality there are:
+\begin{align*}
+  \frac{n(n-1)(n-2)}{2}\quad\text{parameters}
+\end{align*}
+
+Because we treat each input independently, we may say that ${y_i\sim\mathbb{1}(p_{b_ic_i}^{a_i})}$. As such, we may give the likelihood as below (taking $\mathbf{p}$ to mean the parameters to our model):
+
+\begin{itemize}
+  \step $L(\langle((a_i : b_i,c_i),y_i)\rangle_{i=1}^m\mid\mathbf{p})$
+  \step[=] $\displaystyle\prod\limits_{\substack{i=1\\y_i=1}}^mp_{b_i,c_i}^{a_i}\cdot\prod_{\substack{i=1\\y_i=0}}^m(1 - p_{b_i,c_i}^{a_i})$
+\end{itemize}
+
 \subsection{Part (b)}
 
 \subsection{Part (c)}

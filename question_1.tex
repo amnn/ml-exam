@@ -28,4 +28,79 @@ In summary this method is poor because it does not take false-negative error int
 
 \subsection{Part (b)}
 
+To see whether this colleague's suggestion holds water let us look at its effect on the SVM optimisation problem. We will focus on the non-separable case because duplicating samples has no effect when the data is separable.
+
+Suppose we are given $\mathbf{X}=\langle(\mathbf{x}_i,y_i)\rangle_{i=1}^m$ as our training set. The original (soft margin) optimisation problem was:
+
+\begin{alignat*}{3}
+  \min_{\mathbf{w},~w_0,~\boldsymbol\xi}\quad&&\frac{1}{2}\norm{\mathbf{w}}^2 + C\sum_{i=1}^m\xi_i\\
+  \text{s.t. }\quad&&y_i(\mathbf{w}\cdot\mathbf{x}_i+w_0) & \geq 1 - \xi_i &&\quad\text{for }i = 1,\ldots,m
+  \\ &&\xi_i & \geq 0 &&\quad\text{for }i=1,\ldots,m
+\end{alignat*}
+
+\noindent
+Now let us partition $\mathbf{X}$ into
+\begin{align*}
+  \mathbf{X}^+ & = \langle(x_i^+,+1)\rangle_{i=1}^{m^+} && \text{where}\quad m^+ + m^- = m\\
+  \mathbf{X}^- & = \langle(x_i^-,-1)\rangle_{i=1}^{m^-}
+\intertext{And produce our new dataset by duplicating $X^+$ (The spam emails) 200 times:}
+\overset{\sim}{X} & = X^-\concat\underbrace{X^+\concat\cdots\concat X^+}_{\text{200 times}} && \text{where}\quad\overset{\sim}{m} = m^-+200m^+
+\end{align*}
+\noindent And formulate the optimisation problem for this new data-set:
+\begin{alignat*}{3}
+  \min_{\mathbf{w},~w_0,~\boldsymbol\xi}\quad&&\frac{1}{2}\norm{\mathbf{w}}^2 + C\sum_{i=1}^m\xi_i\\
+  \text{s.t. }\quad&&y_i(\mathbf{w}\cdot\mathbf{\overset{\sim}{x}}_i+w_0) & \geq 1 - \xi_i &&\quad\text{for }i = 1,\ldots,\overset{\sim}{m}
+  \\ &&\xi_i & \geq 0 &&\quad\text{for }i=1,\ldots,\overset{\sim}{m}
+  \intertext{But we may rearrange this program to group duplicated data together:}
+  \min_{\mathbf{w},~w_0,~\boldsymbol\xi}\quad&&\frac{1}{2}\norm{\mathbf{w}}^2 + C\sum_{i=1}^m\xi_i\\
+  \text{s.t. }\quad&&-1(\mathbf{w}\cdot\mathbf{x}_i^-+w_0) & \geq 1 - \xi_i &&\quad\text{for }i = 1,\ldots,m^-
+  \\&&+1(\mathbf{w}\cdot\mathbf{x}_i^++w_0) & \geq 1 - \xi_j &&\quad\text{for }i = 1,\ldots,m^+
+  \\&&&&&\quad\makebox[1.4em]{}k = 0,\ldots,199
+  \\&&&&&\quad\makebox[1.6em]{\text{let }}j = m^- + km^++i
+  \\ &&\xi_i & \geq 0 &&\quad\text{for }i=1,\ldots,\overset{\sim}{m}
+\end{alignat*}
+After rearranging, we notice that for a given $i=1,\ldots,m^+$, at the optimal solution, for all $0\leq k,l<200$, $\xi_a = \xi_b$ where $a = m^-+km^++i$ and $b = m^-+lm^++i$.
+
+\begin{proof}
+  To see why, suppose for a contradiction that $\xi^\ast_a<\xi^\ast_b$, in our optimal solution $(\mathbf{w}^\ast,~w_0^\ast,~\boldsymbol\xi^\ast)$.
+  \begin{itemize}
+    \step[\imps] $\mathbf{w}^\ast\cdot\mathbf{x}_i^+ + w_0^\ast\geq 1-\xi_a^\ast > 1-\xi_b^\ast$
+    \step[\imps] There is slack in the constraint for $\xi_b^\ast$.
+    \step[\imps] The objective could be reduced beyond that of the optimal solution by $C(\xi_b^\ast - \xi_a^\ast)$, by setting $\xi_b^\ast\coloneqq\xi_a^\ast$.
+    \step[\contras] The proposed solution is not optimal
+    \step[\imps] such an $\xi_a^\ast$, $\xi_b^\ast$ cannot exist.\qedhere
+  \end{itemize}
+\end{proof}
+
+Given this equality between slack variables, we may replace the 200 slack variables per positive example with one, without any loss of freedom at the optimum:
+
+\begin{alignat*}{3}
+  \min_{\mathbf{w},~w_0,~\boldsymbol\xi}\quad&&\frac{1}{2}\norm{\mathbf{w}}^2 + C(\sum_{i=1}^{m^-}\xi_i^-+200\sum_{i=1}^{m^+}\xi_i^+)\\
+  \text{s.t. }\quad&&-1(\mathbf{w}\cdot\mathbf{x}_i^-+w_0) & \geq 1 - \xi_i^- &&\quad\text{for }i = 1,\ldots,m^-
+  \\ &&+1(\mathbf{w}\cdot\mathbf{x}_i^++w_0) & \geq 1 - \xi_i^+ &&\quad\text{for }i = 1,\ldots,m^+
+  \\ &&\xi_i^- & \geq 0 &&\quad\text{for }i=1,\ldots,m^-
+  \\ &&\xi_i^+ & \geq 0 &&\quad\text{for }i=1,\ldots,m^+
+\end{alignat*}
+
+At this point it is worth observing that this has the effect of penalising false-\textit{negative} errors, not false-positive errors as we had intended. We can change this by moving the factor of 200 to the slack variables for the non-spam emails. In our original formulation, this would be equivalent to duplicating all the legitimate emails 200 times:
+
+\begin{alignat*}{3}
+  \min_{\mathbf{w},~w_0,~\boldsymbol\xi}\quad&&\frac{1}{2}\norm{\mathbf{w}}^2 + C(200\sum_{i=1}^{m^-}\xi_i^-+\sum_{i=1}^{m^+}\xi_i^+)\\
+  \text{s.t. }\quad&&-1(\mathbf{w}\cdot\mathbf{x}_i^-+w_0) & \geq 1 - \xi_i^- &&\quad\text{for }i = 1,\ldots,m^-
+  \\ &&+1(\mathbf{w}\cdot\mathbf{x}_i^++w_0) & \geq 1 - \xi_i^+ &&\quad\text{for }i = 1,\ldots,m^+
+  \\ &&\xi_i^- & \geq 0 &&\quad\text{for }i=1,\ldots,m^-
+  \\ &&\xi_i^+ & \geq 0 &&\quad\text{for }i=1,\ldots,m^+
+\end{alignat*}
+\noindent And then the dual takes the form of:
+\begin{align*}
+  \max_{\boldsymbol\alpha}\quad&-\frac{1}{2}\sum_{i,j}^{m}\alpha_i\alpha_jy_iy_j\mathbf{x}_i^T\mathbf{x}_j+\sum_{i}^m\alpha_i \\
+  \text{s.t.}\quad&\sum_i^my_i\alpha_i = 0
+  \\ & 0\leq\alpha_i\leq C && \text{for }i=1,\ldots,m\text{ where }y_i=+1
+  \\ & 0\leq\alpha_i\leq 200C &&\text{for }i=1,\ldots,m\text{ where }y_i=-1
+\end{align*}
+
+The original formulation would have been less efficient (in time \textit{and} space consumption) than a standard soft margin classifier. In its dual form, it would have had a new variable for each duplicated email, and if we were to kernelise it, the number of legitimate emails used as support vectors could have (in the worst case) gone up by a factor of 200 as well.
+
+The equivalent formulation which changes the cost of slack, however, has the same number of variables in the dual form as the standard soft margin classifier, so it allows us to use the idea of duplication with no performance penalty.
+
 \subsection{Part (c)}

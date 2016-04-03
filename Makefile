@@ -5,6 +5,7 @@ out/report.pdf: question_1.tex question_2.tex question_3.tex
 
 out/%.pdf: %.tex
 	pdflatex -output-directory=out $*.tex
+	bibtex out/$*
 	pdflatex -output-directory=out $*
 
 .PHONY: clean

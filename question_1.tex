@@ -1,8 +1,8 @@
 \subsection{Part (a)}
 
-Suppose we follow our colleague's advice: After training the classifier using a soft-margin SVM on $\langle(\mathbf{x}_i,y_i)\rangle_{i=1}^m$ to get parameters $\mathbf{w}, w_0$, we try to find the $\alpha$ that minimises false-positive error on a fresh sample $\langle(\mathbf{v}_i,u_i)\rangle_{i=1}^k$.
+Suppose we follow our colleague's advice: After training the classifier using a soft-margin SVM on $\langle(\mathbf{x}_i,y_i)\rangle_{i=1}^m$ to get parameters $\mathbf{w}, w_0$, we try to find the $\alpha$ that minimises false-positive error on a fresh sample $\langle(\mathbf{v}_i,u_i)\rangle_{i=1}^k$.\\[1em]
 
-Our colleague refers to this as cross-validation. For this to be true, we would need to treat $\alpha$ as a hyper-parameter, and for each value of $\alpha$, train a new classifier, checking its false-positive rate on the validation set, picking the $\alpha$ that yields the lowest such rate. This seems at odds with their claim that we do not need to retrain the classifier, but in fact it is not: The value of $\alpha$ does not affect the classifier that is learned (as it does not appear in the SVM objective or constraints), so we may train it once and then proceed to vary $\alpha$.
+Our colleague refers to this as cross-validation. For this to be true, we would need to treat $\alpha$ as a hyper-parameter, and for each value of $\alpha$, train a new classifier, checking its false-positive rate on the validation set, picking the $\alpha$ that yields the lowest such rate. This seems at odds with their claim that we do not need to retrain the classifier, but in fact it is not: The value of $\alpha$ does not affect the classifier that is learned (as it does not appear in the SVM objective or constraints), so we may train it once and then proceed to vary $\alpha$.\\[1em]
 
 Given the optimal $\mathbf{w}^\ast$ and $w_0^\ast$ from training, our goal can be phrased in terms of finding the $\alpha^\ast$ that optimises program $V_1$ defined below (whose objective is exactly the number of false positive examples in the validation set).
 \begin{align*}
@@ -22,13 +22,13 @@ The consequence of this is that when optimising $V_1$, $\alpha$ will be sent to 
   \end{cases}
   \\ & = -1
 \end{align*}
-i.e. all emails are labelled as not spam!
+i.e. all emails are labelled as not spam!\\[1em]
 
 In summary this method is poor because it does not take false-negative error into account at all.
 
 \subsection{Part (b)}
 
-To see whether this colleague's suggestion holds water let us look at its effect on the SVM optimisation problem. We will focus on the non-separable case because duplicating samples has no effect when the data is separable.
+To see whether this colleague's suggestion holds water let us look at its effect on the SVM optimisation problem. We will focus on the non-separable case because duplicating samples has no effect when the data is separable.\\[1em]
 
 Suppose we are given $\mathbf{X}=\langle(\mathbf{x}_i,y_i)\rangle_{i=1}^m$ as our training set. The original (soft margin) optimisation problem was:
 
@@ -99,7 +99,7 @@ At this point it is worth observing that this has the effect of penalising false
   \\ & 0\leq\alpha_i\leq 200C &&\text{for }i=1,\ldots,m\text{ where }y_i=-1
 \end{align*}
 
-The original formulation would have been less efficient (in time \textit{and} space consumption) than a standard soft margin classifier. In its dual form, it would have had a new variable for each duplicated email, and if we were to kernelise it, the number of legitimate emails used as support vectors could have (in the worst case) gone up by a factor of 200 as well.
+The original formulation would have been less efficient (in time \textit{and} space consumption) than a standard soft margin classifier. In its dual form, it would have had a new variable for each duplicated email, and if we were to kernelise it, the number of legitimate emails used as support vectors could have (in the worst case) gone up by a factor of 200 as well.\\[1em]
 
 The equivalent formulation which changes the cost of slack, however, has the same number of variables in the dual form as the standard soft margin classifier, so it allows us to use the idea of duplication with no performance penalty.
 

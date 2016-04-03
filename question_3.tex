@@ -1,5 +1,13 @@
 \subsection{Part (a)}
 
+Degradation, as it pertains to feed forward neural networks in [***CITATION***] refers to the phenomenon whereby as the depth of the network increases, both the training and test accuracy saturate (change very little with increasing depth), and then start to get worse.\\[1em]
+
+This runs counter to expectation: As the depth of a network increases, the number of parameters in the model also increases, and typically, this cases a model to \textbf{overfit}. This would be characterised by the training accuracy constantly improving with depth until it reaches 100\% whilst after a point, the test accuracy starts to suffer. This is different from degradation in which both accuracies suffer.\\[1em]
+
+In the case of linear regression with a polynomial basis expansion, I would expect overfit to occur, and not degradation: It is always possible to fit a polynomial of degree $\geq n$ through $n$ points, and linear regression will always find such a fit (if regularisation techniques are not employed), so given $n$ sample points, as the degree $d$ of the basis expansion approaches $n$ from below, I would expect training accuracy to approach 100\% (and stay at 100\% as $d$ exceeds $n$). Meanwhile, test accuracy will deterioriate as this model will generalise poorly.\\[1em]
+
+The reason positted in [***CITATION***] for feed-forward neural networks' susceptibility to degradation is that optimisation techniques may have trouble approximating identity mappings using multiple layers of non-linearities. Such a difficulty would mean that even if there is a $d$-layer neywork, $N$, with better training accuracy than a given $d+k$ layer network ($k > 0$), $N^\prime$, by optimising the latter, we are unlikely to reach a network where the first $d$ layers resemble the former, and the last $k$ layers are identity mappings (even though this is an improvement), or indeed any other interleaving of layers in $N$ and identity mappings.
+
 \subsection{Part (b)}
 
 \subsection{Part (c)}

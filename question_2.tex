@@ -15,10 +15,122 @@ There are $n(n-1)(n-2)$ triples of distinct fruit, however, in half of them, the
 Because we treat each input independently, we may say that ${y_i\sim\mathbb{1}(p_{b_ic_i}^{a_i})}$. As such, we may give the likelihood as below (taking $\mathbf{p}$ to mean the parameters to our model):
 
 \begin{itemize}
-  \step $L(\langle((a_i : b_i,c_i),y_i)\rangle_{i=1}^m\mid\mathbf{p})$
+  \step $\operatorname{L}(\langle((a_i : b_i,c_i),y_i)\rangle_{i=1}^m\mid\mathbf{p})$
   \step[=] $\displaystyle\prod\limits_{\substack{i=1\\y_i=1}}^mp_{b_i,c_i}^{a_i}\cdot\prod_{\substack{i=1\\y_i=0}}^m(1 - p_{b_i,c_i}^{a_i})$
 \end{itemize}
 
 \subsection{Part (b)}
+
+\begin{itemize}
+  \step $\operatorname{NLL}(\langle((a_i:b_i,c_i),y_i)\rangle_{i=1}^m\mid\mathbf{M})$
+  \step[=] $-\ln\operatorname{L}(\langle((a_i:b_i,c_i),y_i)\rangle_{i=1}^m\mid\mathbf{M})$
+  \step[=] $\displaystyle-\ln\left[\prod_{\substack{i=1\\y_i=1}}^m\frac{e^{M_{a_i,b_i}}}{e^{M_{a_i,b_i}} + e^{M_{a_i,c_i}}}\cdot\prod_{\substack{i=1\\y_i=0}}^m\frac{e^{M_{a_i,c_i}}}{e^{M_{a_i,b_i}}+e^{M_{a_i,c_i}}}\right]$
+  \marginnote{Definition of Likelihood (as above)}
+  \step[=] $\displaystyle-\sum_{\substack{i=1\\y_i=1}}^m\left[M_{a_i,b_i} - \ln(e^{M_{a_i,b_i}}+e^{M_{a_i,c_i}})\right]$
+  \marginnote{Distributing $\ln$ through $\prod$}
+  \step $\displaystyle-\sum_{\substack{i=1\\y_i=0}}^m\left[M_{a_i,c_i} - \ln(e^{M_{a_i,b_i}}+e^{M_{a_i,c_i}})\right]$
+  \step[=] $\displaystyle\sum_{i=1}^m\ln(e^{M_{a_i,b_i}} + e^{M_{a_i,c_i}}) - \sum_{\substack{i=1\\y_i=1}}^mM_{a_i,b_i} - \sum_{\substack{i=1\\y_i=0}}^mM_{a_i,c_i}$
+\end{itemize}
+
+So, when our goal is to find a maximum likelihood estimate, our optimisation problem becomes:
+\begin{align*}
+  \text{MLE:}\quad\max_{\mathbf{M}}\quad&&
+  \sum_{i=1}^m\ln(e^{M_{a_i,b_i}} + e^{M_{a_i,c_i}}) & - \sum_{\substack{i=1\\y_i=1}}^mM_{a_i,b_i} - \sum_{\substack{i=1\\y_i=0}}^mM_{a_i,c_i}\\
+  \text{s.t. }\quad&& M_{a,a} & = 1 && \text{for fruit }a
+  \\ && M_{a,b} + M_{b,a} & = 1      && \text{for distinct fruits }a,~b
+  \\ && 0 \leq M_{a,b} & \leq 1     && \text{for pairs of fruits }a,~b
+\end{align*}
+
+\begin{prop}
+  MLE is a convex optimisation problem\\[1em]
+  \noindent It suffices to show that
+  \begin{enumerate}[1.]
+    \item All inequality constraints are convex
+    \item All equality constraints are linear
+    \item The objective function is convex
+  \end{enumerate}
+\end{prop}
+
+We first make some observations about convex functions, namely that:
+\begin{enumerate}[(i)]
+  \item Linear functions are convex.
+  \item Convex functions are closed under addition.
+\end{enumerate}
+
+\begin{proof}[Proof (1/2)]
+  By observation (i), as all the constraints are linear, conditions 1 and 2 are met.\qedhere
+\end{proof}
+
+\begin{proof}[Proof 3]
+  It remains to show that the objective is also convex. First, we split it up as follows:
+  \begin{align*}
+    \operatorname{MLE}(\mathbf{M}) & =
+    \sum_{i=1}^mF_i(\mathbf{M}) - G(\mathbf{M}) - H(\mathbf{M})
+    \\\quad\text{where}\quad &
+    \\F_i(\mathbf{M}) & = \ln(e^{M_{a_i,b_i}}+e^{M_{a_i,b_i}})
+    \\G(\mathbf{M}) & = \sum_{i=1:~y_i=1}^mM_{a_i,b_i}
+    \\H(\mathbf{M}) & = \sum_{i=1:~y_i=0}^mM_{a_i,c_i}
+  \end{align*}
+
+  $G$ and $H$ are linear, so by observation (i), are convex. Then, by the closure of convexity under addition, it suffices to show that $F_i$ is convex for any $i$. $F_i$ is the projection of $\mathbf{M}$ to $\mathbb{R}^2$ followed by the application of $f(x_1,x_2)=\ln(e^{x_1}+x^{x_2})$, so the convexity of the former follows from that of the latter.
+
+  As $f$ is twice differentiable, we may show that $f$ is convex by verifying that $f$'s Hessian is positive semi-definite.
+  \begin{align*}
+    \nabla_{\mathbf{x}}f & = \frac{1}{e^{x_1}+e^{x_2}}
+    \begin{bmatrix}
+      e^{x_1}\\
+      e^{x_2}
+    \end{bmatrix}
+    \\\frac{\partial^2 f}{\partial x_1^2}
+    & = \frac{\partial}{\partial x_1}\frac{e^{x_1}}{e^{x_1}+e^{x_2}}
+    & = \frac{e^{x_1}(e^{x_1}+e^{x_2}) - e^{2x_1}}{(e^{x_1}+e^{x_2})^2}
+    & = \frac{e^{x_1+x_2}}{(e^{x_1}+e^{x_2})^2}
+    \\\frac{\partial^2 f}{\partial x_1\partial x_2}
+    & = \frac{\partial}{\partial x_1}\frac{e^{x_2}}{e^{x_1}+e^{x_2}}
+    && = \frac{-e^{x_1+x_2}}{(e^{x_1}+e^{x_2})^2}
+    \intertext{\ldots and symmetrically for \nth{2} differentials in $x_2$}
+    \implies\nabla_{\mathbb{x}}^2f & = \frac{e^{x_1+x_2}}{(e^{x_1}+e^{x_2})^2}
+    \begin{bmatrix}
+      1 & -1\\
+      -1 & 1
+    \end{bmatrix}
+  \end{align*}
+  Let $\left[\begin{smallmatrix}a\\b\end{smallmatrix}\right]\in\mathbb{R}^2$
+  \begin{align*}
+    [\,a,~b\,]
+    \nabla_{\mathbf{x}}^2f
+    \begin{bmatrix}
+      a\\b
+    \end{bmatrix}
+    & =
+    \frac{e^{x_1+x_2}}{(e^{x_1}+e^{x_2})^2}\cdot
+      [\,a,~b\,]
+    \cdot
+    \begin{bmatrix}
+      a - b\\
+      b - a
+    \end{bmatrix}
+    \\ & = \frac{e^{x_1+x_2}}{(e^{x_1}+e^{x_2})^2}(a(a-b) + b(b-a))
+    \\ & = \frac{e^{x_1+x_2}}{(e^{x_1}+e^{x_2})^2}(a - b)^2
+    \\ & \geq 0
+    \mathnote{%
+      \vspace{-2em}
+      \begin{align*}
+      (a-b)^2         & \geq 0 \text{ for any } & a, b & \in\mathbb{R} &&&&\\
+      \text{and } e^x & \geq 0 \text{ for any } &    x & \in\mathbb{R} &&&&
+      \end{align*}
+    }
+  \end{align*}
+  \noindent $\implies \nabla_{\mathbf{x}}^2f$ is positive semi-definite.
+  \\\noindent $\implies f$ is convex.\qedhere
+\end{proof}
+
+Although we have proven that \textit{MLE} is a convex program, we \textbf{cannot} use \textit{Interior Point Methods}, to find an optimum in polynomial time, as these techniques are only known to work for Linear Programs, Second-Order Cone Programs and Semidefinite Programs [***CITATION***], all of which have linear objective functions (which is not the case for \textit{MLE}).
+
+However, convexity does tell us that it suffices for us to search for a local minimum (as that is guaranteed to also be the global minimum, although perhaps not a unique global minimum). To this end, we might turn to \textit{Higher-Order Newton-Raphson Iteration}. One down-side to this approach is that it converges on stationary points, not optima. Whilst we have shown that the objective is convex, we do not know that it is strictly convex, as such, it may have saddle points that Newton-Raphson could get stuck in. Another issue is that in order to run Newton-Raphson, at every iteration, we must calculate the gradient and the inverse Hessian for the current parameters, for large numbers of fruit, $n$, this could be a prohibitively expensive operation, as the gradient is a vector in $\mathbb{R}^{n^2}$ and the Hessian is a matrix in $\mathbb{R}^{n^2\times n^2}$.
+
+Another viable approach is to try gradient descent, which is less prone to getting stuck in saddles, especially when techniques such as momentum are used. It is also generally more efficient than Newton-Raphson iteration, as we need only calculate the gradient of the objective with respect to one parameter at every iteration. \textit{Stochastic Gradient Descent}, and \textit{AdaGrad} are both good examples of this technique.
+
+We may also wish to try \textit{Coordinate descent}, whereby we cycle through the parameters and at each iteration, vary the parameter of interest in order to reduce the objective, (this bears some similarity to SGD). This technique enjoys the same benefits as the aforementioned gradient descent methods, and like them, has been shown to be effective when used to optimise other convex optimisation problems, such as the dual (linear) SVM formulation [***CITATION***].
 
 \subsection{Part (c)}

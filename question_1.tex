@@ -56,7 +56,7 @@ Now let us partition $\mathbf{X}$ into
   \text{s.t. }\quad&&-1(\mathbf{w}\cdot\mathbf{x}_i^-+w_0) & \geq 1 - \xi_i &&\quad\text{for }i = 1,\ldots,m^-
   \\&&+1(\mathbf{w}\cdot\mathbf{x}_i^++w_0) & \geq 1 - \xi_j &&\quad\text{for }i = 1,\ldots,m^+
   \\&&&&&\quad\makebox[1.4em]{}k = 0,\ldots,199
-  \\&&&&&\quad\makebox[1.6em]{\text{let }}j = m^- + km^++i
+  \\&&&&&\quad\makebox[1.5em]{\text{let }}j = m^- + km^++i
   \\ &&\xi_i & \geq 0 &&\quad\text{for }i=1,\ldots,\overset{\sim}{m}
 \end{alignat*}
 After rearranging, we notice that for a given $i=1,\ldots,m^+$, at the optimal solution, for all $0\leq k,l<200$, $\xi_a = \xi_b$ where $a = m^-+km^++i$ and $b = m^-+lm^++i$.
@@ -82,7 +82,7 @@ Given this equality between slack variables, we may replace the 200 slack variab
   \\ &&\xi_i^+ & \geq 0 &&\quad\text{for }i=1,\ldots,m^+
 \end{alignat*}
 
-At this point it is worth observing that this has the effect of penalising false-\textit{negative} errors, not false-positive errors as we had intended. We can change this by moving the factor of 200 to the slack variables for the non-spam emails. In our original formulation, this would be equivalent to duplicating all the legitimate emails 200 times:
+At this point it is worth observing that this has the effect of penalising false-\textit{negative} errors, not false-positive errors as we had intended. We can change this by moving the factor of 200 to the slack variables for the non-spam emails. In our original formulation, this would be equivalent to \textbf{duplicating all the legitimate emails} 200 times:
 
 \begin{alignat*}{3}
   \min_{\mathbf{w},~w_0,~\boldsymbol\xi^+,\boldsymbol\xi^-}\quad&&\frac{1}{2}\norm{\mathbf{w}}^2 + C(200\sum_{i=1}^{m^-}\xi_i^-+\sum_{i=1}^{m^+}\xi_i^+)\\
@@ -104,7 +104,7 @@ The original formulation would have been less efficient (in time \textit{and} sp
 The equivalent formulation which changes the cost of slack, however, has the same number of variables in the dual form as the standard soft margin classifier, so it allows us to use the idea of duplication with no performance penalty.
 
 \subsection{Part (c)}
-We use a similar idea to that of Part (b), but instead of simplying paying \textit{more} for false-positive slack, we make it infinitely expensive to have false-positive slack. This can be interpreted as having the margin facing legitimate emails being \textbf{hard} and the margin facing spam emails \textbf{soft}.\\[1em]
+We use a similar idea to that of Part (b), but instead of simply paying \textit{more} for false-positive slack, we make it infinitely expensive to have false-positive slack. This can be interpreted as having the margin facing legitimate emails being \textbf{hard} and the margin facing spam emails \textbf{soft}.\\[1em]
 
 \noindent\textbf{Primal}
 \begin{alignat*}{3}

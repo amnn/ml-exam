@@ -10,6 +10,56 @@ The reason positted in [***CITATION***] for feed-forward neural networks' suscep
 
 \subsection{Part (b)}
 
+Both Residual [***CITATION***] and Highway [***CITATION***] networks address issues that arise when attempting to train very deep feed-forward networks, by designing networks where the input to a layer can skip it (via a shortcircuit, or an ``information highway'' respectively) and be sent through to later layers.\\[1em]
+
+Given a plain 4-layer network with $\operatorname{ReLU}$ non-linearities (biases omitted for brevity):
+\begin{align*}
+  &\operatorname{ReLU} : \mathbb{R}^n\to\mathbb{R}^n\\
+  &\operatorname{ReLU}(\mathbf{x}) = \mathbf{x}^\prime\text{ where }x^\prime_i = \max(0,x_i)
+\end{align*}
+\begin{align*}
+  &\text{Weights}\quad&\mathbf{W}_i & \in\mathbb{R}^{n\times n} && \text{for}\quad i = 1,\ldots,4\\
+  &&\mathbf{z}_i & \in\mathbb{R} &&\text{for}\quad i = 0,\ldots,4\\
+  &&\mathbf{z}_{i+1} & = \operatorname{ReLU}(\mathbf{W}_{i+1}\mathbf{z}_i) &&\text{for}\quad i = 0,\ldots,3\\
+  &\textbf{input}\quad&\mathbf{x} & = \mathbf{z}_0\\
+  &\textbf{output}\quad&\mathbf{y} & = \mathbf{z}_4
+\end{align*}
+
+We may make it a residual network by adding shortcircuits every 2 layers:\marginnote{The choice of 2 layers was arbitrary for the sake of the example, both techniques work when skipping any number of layers, although they must skip over a non-linearity in order to change the behaviour of the network.}
+
+\begin{align*}
+  \mathbf{z}_{i+1} & =
+  \begin{cases}
+    \operatorname{ReLU}(\mathbf{W}_{i+1}\mathbf{z}_i + \mathbf{z}_{i-1})
+    & \text{ if $i+1$ is even}\\
+    \operatorname{ReLU}(\mathbf{W}_{i+1}\mathbf{z}_i)
+    & \text{ otherwise}
+  \end{cases}
+\end{align*}
+
+Or we may make it a highway network by adding a transfer and carry gate after every 2 layers:
+
+\begin{align*}
+  \mathbf{z}_{i+1} & =
+  \begin{cases}
+    \operatorname{ReLU}(\mathbf{W}_{i+1}\mathbf{z}_i)\odot T(\mathbf{z}_{i-1},\mathbf{U}_{i+1})
+    +\mathbf{z}_{i-1}\odot C(\mathbf{z}_{i-1},\mathbf{V}_{i+1})
+    & \text{ if $i+1$ is even}\\
+    \operatorname{ReLU}(\mathbf{W}_{i+1}\mathbf{z}_i)
+    & \text{ otherwise}
+  \end{cases}
+\end{align*}
+
+Where $T$ and $C$ define the transform and carry gates respectively and $\odot$ denotes elementwise multiplication.\\[1em]
+
+As can be seen, the ``skipping'' is not true skipping in either case. Instead, the input to a layer is mixed with the output of a later layer.\\[1em]
+
+Residual networks could be considered a special case of Highway networks, where the transfer and carry gates are both always open. As a result, short-circuits in Residual networks add no extra parameters whereas those in Highway networks do ($\mathbf{U}$ and $\mathbf{V}$ in the example).\\[1em]
+
 \subsection{Part (c)}
 
-\subsection{Part (d)}
+Lesioning is the process of essentially ``disabling'' a layer: Its transfer gate is manually set to $\mathbf{0}$ and (as the carry gate is defined by $\mathbf{1}-\mathbf{T}$ in the paper) its carry gate becomese $\mathbf{1}$, causing it to just copy its input to its output.
+
+It was used to see which layers are significant to the output of the network. The conclusion was that in most networks, lesioning early layers was most detrimental, with later layers becoming progressively less significant. What is more, for networks for simpler learning problems, like MNIST (Handwritten digits), later layers contributed almost nothing to the output, but an equally deep highway network used for a more complex learning task, such as CIFAR-100 (Object recognition, 100 classes), utilised all of its layers. The method used to determine this was, after training, a given layer was lesioned, the network was run on the training set again and the difference in the error was measured. A large difference suggested the layer contributed to the network, and a small difference in error suggested the opposite.\\[1em]
+
+This indicates that Highway networks are capable of scaling he number of layers it uses based on the needs of the specific classification task at hand, which is a desirable trait but one that (as hinted in [***CITATION***]) is not easy to achieve with plain feed forward networks.

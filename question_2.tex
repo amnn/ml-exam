@@ -134,3 +134,11 @@ Another viable approach is to try gradient descent, which is less prone to getti
 We may also wish to try \textit{Coordinate descent}, whereby we cycle through the parameters and at each iteration, vary the parameter of interest in order to reduce the objective, (this bears some similarity to SGD). This technique enjoys the same benefits as the aforementioned gradient descent methods, and like them, has been shown to be effective when used to optimise other convex optimisation problems, such as the dual (linear) SVM formulation [***CITATION***].
 
 \subsection{Part (c)}
+
+One option is to treat $\mathbf{M}$ as a similarity measure and perform \textit{heirarchical clustering}, measuring the similarity between clusters by the average pairwise similarity of their respective components. This idea of heirarchy may be a useful one as fruit (or the plants they come from) already fall into the taxonomic heirarchy.
+
+As the question tells us that $\mathbf{M}$ is positive semidefinite, we may also embed $\mathbf{M}$ into Euclidean space. Such an embedding allows us to use other techniques, such as \textit{kernel principal component analysis}, \textit{k-means clustering} or \textit{spectral clustering} which may produce clusters with a better fit than heirarchical clustering.
+
+One such embedding can be achieved with \textit{multidimensional scaling}: As we know that $\mathbb{M}$ is positive semidefinite, we know that it arises as the Gram matrix of some $n$ vectors in $\mathbb{R}^f$, let them be the rows of $\mathbf{X}\in\mathbb{R}^{n\times f}$ such that $\mathbf{M} = \mathbf{X}\mathbf{X}^\intercal$.
+
+Given the non-thin Single-Value Decomposition: $\mathbf{X} = \mathbf{U}\boldsymbol\Sigma\mathbf{V}^\intercal$, we can write $\mathbf{M}$ as $\mathbf{U}\boldsymbol\Sigma\boldsymbol\Sigma^\intercal\mathbf{U}^\intercal$. Then we see that $\mathbf{M}$ is the Gram matrix of the rows of $\mathbf{U}\boldsymbol\Sigma = \overset{\sim}{\mathbf{X}}$, which we may use as our embedding.

@@ -1,6 +1,6 @@
 \subsection{Part (a)}
 
-Our model treats the each distinct input as an independent Bernoulli random variable, whose probability of success is governed by the input triple that was posed as the question, so we have as many free parameters as the size of our input space. To determine this size we note that, given an input triple $(a : b, c)$:
+Our model treats each distinct input as an independent Bernoulli random variable, whose probability of success is governed by the input triple that was posed as the question, so we have as many free parameters as the size of our input space. To determine this size we note that, given an input triple $(a : b, c)$:
 \begin{itemize}[-]
 \itemsep0em
 \item All fruit are distinct, that is to say $a\neq b$, $b\neq c$ and $a\neq c$.
@@ -9,7 +9,7 @@ Our model treats the each distinct input as an independent Bernoulli random vari
 
 There are $n(n-1)(n-2)$ triples of distinct fruit, however, in half of them, the order of the second and third fruit is inverted, so in actuality there are:
 \begin{align*}
-  \frac{n(n-1)(n-2)}{2}\quad\text{parameters}
+  \frac{n(n-1)(n-2)}{2}\quad\text{free parameters}
 \end{align*}
 
 Because we treat each input independently, we may say that ${y_i\sim\mathbb{1}(p_{b_ic_i}^{a_i})}$. As such, we may give the likelihood as below (taking $\mathbf{p}$ to mean the parameters to our model):
@@ -125,13 +125,15 @@ We first make some observations about convex functions, namely that:
   \\\noindent $\implies f$ is convex.\qedhere
 \end{proof}
 
-Although we have proven that \textit{MLE} is a convex program, we \textbf{cannot} use \textit{Interior Point Methods}, to find an optimum in polynomial time, as these techniques are only known to work for Linear Programs, Second-Order Cone Programs and Semidefinite Programs\cite{nesterov1994interior}, all of which have linear objective functions (which is not the case for \textit{MLE}).\\[1em]
+Although we have proven that \textit{MLE} is a convex program, we \textbf{cannot} use \textit{Interior Point Methods}, to find an optimum in polynomial time, as these techniques are only known to work for Linear Programs, Second-Order Cone Programs and Semidefinite Programs\cite{nesterov1994interior}, all of which have linear objective functions (which is not the case for \textit{MLE}). However, convexity does tell us that it suffices for us to search for a local minimum (as that is guaranteed to also be the global minimum, although perhaps not a unique global minimum).\\[1em]
 
-However, convexity does tell us that it suffices for us to search for a local minimum (as that is guaranteed to also be the global minimum, although perhaps not a unique global minimum). To this end, we might turn to \textit{Higher-Order Newton-Raphson Iteration}. One down-side to this approach is that it converges on stationary points, not optima. Whilst we have shown that the objective is convex, we do not know that it is strictly convex, as such, it may have saddle points that Newton-Raphson could get stuck in. Another issue is that in order to run Newton-Raphson, at every iteration, we must calculate the gradient and the inverse Hessian for the current parameters, for large numbers of fruit, $n$, this could be a prohibitively expensive operation, as the gradient is a vector in $\mathbb{R}^{n^2}$ and the Hessian is a matrix in $\mathbb{R}^{n^2\times n^2}$.\\[1em]
+To this end, we might turn to \textit{Higher-Order Newton-Raphson Iteration}, but it is not ideal for a few reasons: Firstly, it converges on stationary points, not optima, and whilst we have shown that the objective is convex, we do not know that it is strictly convex, so it may have saddle points that Newton-Raphson could get stuck in. Another issue is that in order to run Newton-Raphson, at every iteration, we must calculate the gradient and the inverse Hessian for the current parameters. For large numbers of fruit, $n$, this could be a prohibitively expensive operation, as the gradient is a vector in $\mathbb{R}^{n^2}$ and the Hessian is a matrix in $\mathbb{R}^{n^2\times n^2}$.\\[1em]
 
-Another viable approach is to try gradient descent, which is less prone to getting stuck in saddles, especially when techniques such as momentum are used. It is also generally more efficient than Newton-Raphson iteration, as we need only calculate the gradient of the objective with respect to one parameter at every iteration. \textit{Stochastic Gradient Descent}, and \textit{AdaGrad} are both good examples of this technique.\\[1em]
+A more viable approach is to try gradient descent, which is less prone to getting stuck in saddles, especially when techniques such as momentum are used. It is also generally more efficient, per iteration, than Newton-Raphson, as we need only calculate the gradient of the objective with respect to one parameter. \textit{Stochastic Gradient Descent}, and \textit{AdaGrad} are both good examples of this technique.\\[1em]
 
-We may also wish to try \textit{Coordinate descent}, whereby we cycle through the parameters and at each iteration, vary the parameter of interest in order to reduce the objective, (this bears some similarity to SGD). This technique enjoys the same benefits as the aforementioned gradient descent methods, and like them, has been shown to be effective when used to optimise other convex optimisation problems, such as the dual (linear) SVM formulation\cite{hsieh2008dual}.
+We may also wish to try \textit{Coordinate descent}, whereby we cycle through the parameters and at each iteration, vary the parameter of interest in order to reduce the objective, (this bears some similarity to SGD). This technique enjoys the same benefits as the aforementioned gradient descent methods, and like them, has been shown to be effective when used to optimise other convex optimisation problems, such as the dual (linear) SVM formulation\cite{hsieh2008dual}.\\[1em]
+
+Any of the last three options would be worth exploring as a means to finding our desired maximum likelihood estimate.
 
 \subsection{Part (c)}
 

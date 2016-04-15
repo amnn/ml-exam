@@ -48,11 +48,11 @@ Now let us partition $\mathbf{X}$ into
 \end{align*}
 \noindent And formulate the optimisation problem for this new data-set:
 \begin{alignat*}{3}
-  \min_{\mathbf{w},~w_0,~\boldsymbol\xi}\quad&&\frac{1}{2}\norm{\mathbf{w}}^2 + C\sum_{i=1}^m\xi_i\\
+  \min_{\mathbf{w},~w_0,~\boldsymbol\xi}\quad&&\frac{1}{2}\norm{\mathbf{w}}^2 + C\sum_{i=1}^{\overset{\sim}{m}}\xi_i\\
   \text{s.t. }\quad&&y_i(\mathbf{w}\cdot\mathbf{\overset{\sim}{x}}_i+w_0) & \geq 1 - \xi_i &&\quad\text{for }i = 1,\ldots,\overset{\sim}{m}
   \\ &&\xi_i & \geq 0 &&\quad\text{for }i=1,\ldots,\overset{\sim}{m}
   \intertext{But we may rearrange this program to group duplicated data together:}
-  \min_{\mathbf{w},~w_0,~\boldsymbol\xi}\quad&&\frac{1}{2}\norm{\mathbf{w}}^2 + C\sum_{i=1}^m\xi_i\\
+  \min_{\mathbf{w},~w_0,~\boldsymbol\xi}\quad&&\frac{1}{2}\norm{\mathbf{w}}^2 + C\sum_{i=1}^{\overset{\sim}{m}}\xi_i\\
   \text{s.t. }\quad&&-1(\mathbf{w}\cdot\mathbf{x}_i^-+w_0) & \geq 1 - \xi_i &&\quad\text{for }i = 1,\ldots,m^-
   \\&&+1(\mathbf{w}\cdot\mathbf{x}_i^++w_0) & \geq 1 - \xi_j &&\quad\text{for }i = 1,\ldots,m^+
   \\&&&&&\quad\makebox[1.4em]{}k = 0,\ldots,199
@@ -101,7 +101,7 @@ At this point it is worth observing that this has the effect of penalising false
 
 The original formulation would have been less efficient (in time \textit{and} space consumption) than a standard soft margin classifier. In its dual form, it would have had a new variable for each duplicated email, and if we were to kernelise it, the number of legitimate emails used as support vectors could have (in the worst case) gone up by a factor of 200 as well.\\[1em]
 
-The equivalent formulation which changes the cost of slack, however, has the same number of variables in the dual form as the standard soft margin classifier, so it allows us to use the idea of duplication with no performance penalty.
+The equivalent formulation which changes the cost of slack, however, has the same number of variables in the dual form as the standard soft margin classifier, so it allows us to use the idea of duplication with no performance penalty. With the modifications described here, this suggestion shows promise in achieving its goal.
 
 \subsection{Part (c)}
 We use a similar idea to that of Part (b), but instead of simply paying \textit{more} for false-positive slack, we make it infinitely expensive to have false-positive slack. This can be interpreted as having the margin facing legitimate emails being \textbf{hard} and the margin facing spam emails \textbf{soft}.\\[1em]
@@ -136,4 +136,4 @@ We use a similar idea to that of Part (b), but instead of simply paying \textit{
   \end{flalign*}
 \end{proof}
 
-In order to minimise false-negative errors, we should perform a cross-validated grid-search to choose an appropriate value of $C$ that minimises validation error.
+In order to minimise false-negative errors, we should perform a cross-validated grid-search to choose an appropriate value of $C$ that minimises error on a separate validation set.
